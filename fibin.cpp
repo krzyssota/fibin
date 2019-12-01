@@ -3,74 +3,92 @@
 #include <cstdint>
 #include <functional>
 
-//template <int n>
-//struct Fib : std::integral_constant<int, Fib<n- 1>::value + Fib<n - 2>::value> {};
+/*
+ WERSJA Z DZIEDZICZENIEM PO INTEGRAL_CONSTANT
 
-//template<>
-//struct Fib<1> : std::integral_constant<int, 1> {};
-//template<>
-//struct Fib<0> : std::integral_constant<int, 0> {};
+template <int n>
+struct Fib : std::integral_constant<int, Fib<n- 1>::value + Fib<n - 2>::value> {};
 
-//template<typename T>
-//class Fibin{
-//    using type = T;
-//};
-//
-//struct True { static constexpr bool value = true; };
-//struct False { static constexpr bool value = false; };
-//
-//
-//template<typename T>
-//struct Lit {};
-//
-//template <int n>
-//struct Lit<Fib<n>> : Fib<n>{};
-//
-//template<>
-//struct Lit<False> : std::false_type {} ;
-//
-//template<>
-//struct Lit<True> : std::true_type {};
-//
-//template<typename T, typename U>
-//struct Eq {
-//
-//};
-//
-//template<typename T>
-//struct Eq<T, T> {
-//
-//};
-//
-//
-//int main(){
-//    static_assert(2 == Lit<Fib<3>>());
-//    return 0;
-//}
+template<>
+struct Fib<1> : std::integral_constant<int, 1> {};
+template<>
+struct Fib<0> : std::integral_constant<int, 0> {};
+
+struct True {};
+struct False {};
+
+template<typename T>
+struct Lit {};
+
+template <int n>
+struct Lit<Fib<n>> : Fib<n>{};
+
+template<>
+struct Lit<False> : std::false_type {} ;
+
+template<>
+struct Lit<True> : std::true_type {};
+
+template<typename ... Args>
+struct Sum {};
+
+template<std::size_t N, std::size_t M, typename ... Args>
+struct Sum<Lit<Fib<N>>, Lit<Fib<M>>, Args...> :
+    std::integral_constant<std::size_t, Lit<Fib<N>>::value + Lit<Fib<M>>::value + Sum<Args...>()> {};
+
+template<std::size_t N>
+struct Sum< Lit<Fib<N>>> : std::integral_constant<std::size_t, Lit<Fib<N>>::value> {};
+
+template<>
+struct Sum<> : std::integral_constant<std::size_t, 0> {};
+
+template<typename T>
+struct Inc1 {};
+
+template<std::size_t N>
+struct Inc1<Lit<Fib<N>>> {
+    //... tu chyba przyda się Var albo Ref
+};
+
+template<typename T>
+struct Inc10 {};
+
+template<std::size_t N>
+struct Inc10<Lit<Fib<N>>> {
+    //... tu chyba przyda się Var albo Ref
+};
 
 
+
+int main(){
+    static_assert(1 == Lit<Fib<1>>());
+    static_assert(1 == Fib<1>());
+    static_assert(3 == Sum<Lit<Fib<1>>, Lit<Fib<1>>, Lit<Fib<1>>>());
+    return 0;
+}*/
+
+//---------------------------------------------------------
+// WERSJA Z POLEM TYPU SIZE_T
 
 template<std::size_t N>
 struct Fib {
 	static constexpr std::size_t value = Fib<N-1>::value + Fib<N-2>::value;
 };
-
 template<>
 struct Fib<0> {
 	static constexpr std::size_t value = 0;
 };
-
 template<>
 struct Fib<1>
 {
 	static constexpr std::size_t value = 1;
 };
 
-template<typename T>
-struct Lit {};
-
 struct True {};
 struct False {};
+
+template<typename T>
+struct Lit {};
 
 template<std::size_t N>
 struct Lit<Fib<N>> {
@@ -85,4 +103,28 @@ struct Var {
 	const char (&id)[N];
 	constexpr Var(const char (&id)[N]) :id(id) {}
 };
+
+template< typename ... Args>
+struct Sum {};
+
+template<std::size_t N, std::size_t M, typename ... Args>
+struct Sum<Lit<Fib<N>>, Lit<Fib<M>>, Args...>{
+    static constexpr std::size_t sum =  Lit<Fib<N>>::value + Lit<Fib<M>>::value + Sum<Args...>::sum;
+};
+
+template<std::size_t N>
+struct Sum<Lit<Fib<N>>> {
+    static constexpr std::size_t sum = Lit<Fib<N>>::value;
+};
+
+template<>
+struct Sum<> {
+    static constexpr std::size_t sum = 0;
+};
+
+int main(){
+    static_assert(1 == Lit<Fib<1>>::value);
+    static_assert(3 == Sum<Lit<Fib<1>>, Lit<Fib<1>>, Lit<Fib<1>>>::sum);
+    return 0;
+}
 
