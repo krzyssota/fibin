@@ -129,7 +129,7 @@ struct Inc1 {};
 
 template<std::size_t N>
 struct Inc1<Lit<Fib<N>>> {
-	static constexpr std::size_t increased = Lit<Fib<N>>::value + 1;
+	static constexpr std::size_t value = Lit<Fib<N>>::value + Lit<Fib<1>>::value;
 };
 
 template<typename T>
@@ -137,7 +137,7 @@ struct Inc10 {};
 
 template<std::size_t N>
 struct Inc10<Lit<Fib<N>>> {
-	static constexpr std::size_t increased = Lit<Fib<N>>::value + 10;
+	static constexpr std::size_t increased = Lit<Fib<N>>::value + Lit<Fib<10>>::value;
 };
 
 template< typename ... Args>
@@ -162,6 +162,7 @@ int main(){
     static_assert(1 == Lit<Fib<1>>::value);
 	static_assert(3 == Sum<Lit<Fib<1>>, Lit<Fib<1>>, Lit<Fib<1>>>::sum);
 	static_assert(true == Eq<Lit<Fib<1>>, Lit<Fib<1>>>::equal);
+	static_assert(1 == Inc1<Lit<Fib<0>>>::value);
     return 0;
 }
 
