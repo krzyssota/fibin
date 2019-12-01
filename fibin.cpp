@@ -99,10 +99,14 @@ template<> struct Lit<True> :public std::true_type {};
 template<> struct Lit<False> :public std::false_type {};
 
 template<std::size_t N>
-struct Var {
-	const char (&id)[N];
-	constexpr Var(const char (&id)[N]) :id(id) {}
-};
+constexpr unsigned long long Var(const char (&id)[N]) {
+	static_assert(sizeof(unsigned long long) == 8);
+	unsigned long long ret = 0;
+	for(std::size_t i = 0; i < N; i++) {
+		ret |= static_cast<std::size_t>(static_cast<unsigned char>(id[i])) << (i*8);
+	}
+	return ret;
+}
 
 template< typename ... Args>
 struct Sum {};
