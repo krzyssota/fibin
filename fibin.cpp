@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdint>
 #include <functional>
+#include <string>
 
 /*
  WERSJA Z DZIEDZICZENIEM PO INTEGRAL_CONSTANT
@@ -98,6 +99,7 @@ struct Lit<Fib<N>> {
 template<> struct Lit<True> :public std::true_type {};
 template<> struct Lit<False> :public std::false_type {};
 
+//FIXME Czy jesli zmienna ma wiecej niz 6 znakow to ma sie kompilowac czy mozna to sprawdzac w funkcji assertem?
 template<std::size_t N>
 constexpr unsigned long long Var(const char (&id)[N]) {
 	static_assert(sizeof(unsigned long long) == 8);
@@ -112,6 +114,14 @@ constexpr unsigned long long Var(const char (&id)[N]) {
 template<unsigned long long varId>
 struct Ref {
 	static std::size_t value;
+};
+
+template< typename ... Args>
+struct Eq {};
+
+template<std::size_t N, std::size_t M>
+struct Eq<Lit<Fib<N>>, Lit<Fib<M>>>{
+	static constexpr bool equal = Lit<Fib<N>>::value == Lit<Fib<M>>::value;
 };
 
 template< typename ... Args>
