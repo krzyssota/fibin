@@ -102,11 +102,17 @@ template<std::size_t N>
 constexpr unsigned long long Var(const char (&id)[N]) {
 	static_assert(sizeof(unsigned long long) == 8);
 	unsigned long long ret = 0;
-	for(std::size_t i = 0; i < N; i++) {
+	for(std::size_t i = 0; i < N; i++)
+	{
 		ret |= static_cast<std::size_t>(static_cast<unsigned char>(id[i])) << (i*8);
 	}
 	return ret;
 }
+
+template<unsigned long long varId>
+struct Ref {
+	static std::size_t value;
+};
 
 template< typename ... Args>
 struct Sum {};
