@@ -80,13 +80,13 @@ struct Fib<0> {
 	static constexpr std::size_t value = 0;
 };
 template<>
-struct Fib<1>
-{
+struct Fib<1> {
 	static constexpr std::size_t value = 1;
 };
 
 struct True {};
 struct False {};
+
 
 template<typename T>
 struct Lit {};
@@ -110,11 +110,48 @@ constexpr unsigned long long Var(const char (&id)[N]) {
 	}
 	return ret;
 }
+// TODO var trzeba skonwertować
+// template <ulong Var, typename Val, typename Body>
+// struct Let {};
+
+/* struct Eval< If<Cond, Then, Else>>
+*        using result = Eval<if<Eval<Cond>::result>,Then, Else>>::result
+  struct Eval< If<True, Then, Else>
+  *     using result = typename Eval<Then>::result
+  *struct Eval< If<False, Then, Else>
+  *     using result = typename Eval<Else>::result
+
+  *
+  *eval<>()
+  *
+  * eval<T>::result::value
+  * // struktura typu closure
+  *
+  *     struct Envirionment {};
+  *
+  *     template <Name , Value , Environment>
+  *     struct Environment {}
+  *
+  *     <Environment<y, Lit<2>>, Environment<x, Lit<1>>, Empty>
+  *
+  *
+  * */
+/*
+ template <typename T>
+ class isFib : public std::false_type{};
+
+ template <uint64 n>
+ class ifFib<Fib<n>> : std::true_type {};
+
+ template<typename T, typename = typename std::enable_if<is_same<isFib<T>::value || isBool<T>::value)::type
+
+
 
 template<unsigned long long varId>
 struct Ref {
 	static std::size_t value;
 };
+*/
 
 template< typename ... Args>
 struct Eq {};
@@ -122,6 +159,23 @@ struct Eq {};
 template<std::size_t N, std::size_t M>
 struct Eq<Lit<Fib<N>>, Lit<Fib<M>>>{
 	static constexpr bool equal = Lit<Fib<N>>::value == Lit<Fib<M>>::value;
+};
+
+template<>
+struct Eq<Lit<True>, Lit<True>>{
+    static constexpr bool equal = std::bool_constant<true>();
+};
+template<>
+struct Eq<Lit<False>, Lit<False>>{
+    static constexpr bool equal = std::bool_constant<true>();
+};
+template<>
+struct Eq<Lit<True>, Lit<False>>{
+    static constexpr bool equal = std::bool_constant<false>();
+};
+template<>
+struct Eq<Lit<False>, Lit<True>>{
+    static constexpr bool equal = std::bool_constant<false>();
 };
 
 template<typename T>
@@ -158,11 +212,29 @@ struct Sum<> {
     static constexpr std::size_t sum = 0;
 };
 
+
+
+template<typename ValueType>
+class Fibin {
+public :
+    template<typename Expr>
+    static constexpr void eval() {
+        std::cout << "Fibin doesn't support: PKc\n" << "Fibin works fine!\n";
+    }
+    template<typename Expr, typename = typename std::enable_if<std::is_integral<ValueType>::value, Expr>::type>
+    static constexpr ValueType eval() {
+        return 0;
+    }
+
+
+};
+
 int main(){
+    Fibin<const char*>::eval<Lit<Fib<0>>>();
     static_assert(1 == Lit<Fib<1>>::value);
-	static_assert(3 == Sum<Lit<Fib<1>>, Lit<Fib<1>>, Lit<Fib<1>>>::sum);
-	static_assert(true == Eq<Lit<Fib<1>>, Lit<Fib<1>>>::equal);
-	static_assert(1 == Inc1<Lit<Fib<0>>>::value);
+    static_assert(3 == Sum<Lit<Fib<1>>, Lit<Fib<1>>, Lit<Fib<1>>>::sum);
+    static_assert(true == Eq<Lit<Fib<1>>, Lit<Fib<1>>>::equal);
+    static_assert(1 == Inc1<Lit<Fib<0>>>::value);
     return 0;
 }
 
