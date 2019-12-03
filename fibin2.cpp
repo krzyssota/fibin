@@ -169,5 +169,9 @@ public :
 int main() {
     static_assert(1 == Fibin<uint64_t>::eval<Lit<Fib<1>>>());
     static_assert(0 == Fibin<uint64_t>::eval<If<Lit<True>, Fib<0>, Fib<1>>>());
+
+    // Prints out to std::cout: "Fibin doesn't support: PKc"
+    Fibin<const char*>::eval<Lit<Fib<0>>>();
+    std::cout << "Fibin works fine!" << std::endl;
     return 0;
 }
