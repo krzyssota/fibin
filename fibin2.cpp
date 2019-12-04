@@ -140,7 +140,7 @@ public:
     };
 
     template<typename Env, typename A, typename B, typename ... Args>
-    struct Eval<Sum<A, B, Args>, Env> {
+    struct Eval<Sum<A, B, args>, Env> {
         using result = struct sum {
             static const ValueType value = Eval<A, Env>::value + Eval<B, Env>::value + Eval<Sum<Env, Args>>::value;
         };
