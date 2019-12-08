@@ -79,21 +79,28 @@ public:
         return Eval<Expr, Empty>::result::value;
     };
 
+private:
     template<typename Expr, typename Env>
     struct Eval {
     };
 
     template<typename Env>
     struct Eval<Lit<Fib<0>>, Env> {
-        using result = Fib<0>;
+        using result = struct LF0 {
+            static constexpr ValueType value = 0;
+        };
     };
     template<typename Env>
     struct Eval<Lit<Fib<1>>, Env> {
-        using result = Fib<1>;
+        using result = struct LF1 {
+            static constexpr ValueType value = 1;
+        };
     };
     template<uint64_t N, typename Env>
     struct Eval<Lit<Fib<N>>, Env> {
-        using result = Fib<N>;
+        using result = struct LFN {
+            static constexpr ValueType value = Eval<Lit<Fib<N - 1>>, Env>::result::value + Eval<Lit<Fib<N - 2>>, Env>::result::value;
+        };
     };
 
     // IF
@@ -155,9 +162,5 @@ public:
         using result = typename Eval<Sum<Lit<Fib<10>>, T>, Env>::result ;
     };
 };
-
-int main() {
-    static_assert(6 == Fibin<int>::eval<Sum< Lit<Fib<2>>, Sum<Lit<Fib<3>>, Lit<Fib<4>>> >>());
-}
 
 #endif //JNP1_FIBIN_MASTER_FIBIN_H
